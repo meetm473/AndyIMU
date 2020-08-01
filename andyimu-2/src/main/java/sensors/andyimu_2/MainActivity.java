@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
             "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
             "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
             "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
-    private static final double RAD_TO_DEG = 57.295779513082320876798154814105;
 
     // UI Variables
     private TextView logTv;
@@ -48,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private Button connectBtn;
     private EditText ipTF;
     private Switch magSw;
+    private Switch angSw;
+    private double RAD_TO_DEG;
 
     // Sensor interface variables
     private SensorManager sensorManager;
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         connectBtn = findViewById(R.id.connectBtn);
         ipTF = findViewById(R.id.ipTF);
         magSw = findViewById(R.id.magneto_sw);
+        angSw = findViewById(R.id.angle_sw);
         startBtn.setEnabled(false);
 
         // Creating instances to access sensors
@@ -112,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         pingSender = new WifiTransmissionLoop();    // Begin one instance of wifi transmission looper; making it ready to accept transmission tasks
 
         SystemClock.sleep(100);
+        RAD_TO_DEG = 1;
         ipSet = false;
         loopIsOn = false;
         use_mag = new AtomicBoolean(false);
@@ -125,10 +128,10 @@ public class MainActivity extends AppCompatActivity {
 
         logTv.append("Hello! This is the status box.\n"
                     +" - To check the connection with server, press CONNECT and then PING\n"
-                    +" - To append magnetometer data along with accelero and gryo, turn on the switch\n"
-                    +" - To transmit data, press CONNECT followed by START.\n"
-                    +"-  To clear the status box, press CLEAR.\n\n");
-
+                    +" - To toggle gyro data type between degrees per second and radians per second, use the switch"
+                    +" - To append magneto data along with accelero and gryo, turn on the switch\n"
+                    +" - To transmit data, press CONNECT followed by START\n"
+                    +"-  To clear the status box, press CLEAR\n\n");
     }
 
     // Adding a menu
@@ -211,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
     public void connectBtnOnClick(View v){
         if(ipSet){
             ipTF.setEnabled(true);
+            if(loopIsOn) startBtn.performClick();
             startBtn.setEnabled(false);
             ipSet = false;
             connectBtn.setText("CONNECT");
@@ -245,6 +249,19 @@ public class MainActivity extends AppCompatActivity {
             logTv.append("\nRemoving magnetometer data...\n");
             sensorManager.unregisterListener(magnetometerListener);
             use_mag.set(false);
+        }
+    }
+
+    public void angleSwClick(View v){
+        if(angSw.isChecked()){
+            RAD_TO_DEG = 57.295779513082320876798154814105;
+            logTv.append("\nGyroscope data type: degrees per second.\n");
+            angSw.setText("DEG");
+        }
+        else{
+            RAD_TO_DEG = 1;
+            logTv.append("\nGyroscope data type: radians per second.\n");
+            angSw.setText("RAD");
         }
     }
 
