@@ -12,4 +12,4 @@ Android application which transmits the data of the inbuilt accelerometer, gyrsc
 
 
 [1]:https://github.com/meetm473/Cube-Visualization
-[2]:link-to-human_arm-repo
+[2]:https://github.com/meetm473/human_arm
